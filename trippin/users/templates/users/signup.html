@@ -1,0 +1,22 @@
+{% extends "trippin/base.html" %}
+{% block content %}
+<h2>Create Account</h2>
+
+<body>
+	<p>
+		<div class="form-group">
+			<form class="form-horizontal" action="/users/register/" method="POST">
+        		{% csrf_token %}
+			    <input type="text" class="form-control" placeholder="First Name" name="first_name">
+			    <input type="text" class="form-control" placeholder="Last Name" name="last_name">
+			    <input type="text" class="form-control" placeholder="Username" name="username">
+			    <input type="text" class="form-control" placeholder="Email Address" name="email">
+			    <input type="password" class="form-control" placeholder="Password" name="password">
+				<input type="submit" class="btn btn-default">
+			</form>
+		</div>
+	</p>
+</body>
+
+{% endblock %}
+

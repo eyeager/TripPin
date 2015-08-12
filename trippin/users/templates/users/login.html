@@ -1,0 +1,17 @@
+{% extends "trippin/base.html" %}
+{% block content %}
+<h2>Login</h2>
+
+<body>
+	<p>
+		<div class="form-group">
+			<form action="/users/login_user/" method="POST">
+				{% csrf_token %}
+			    <input type="text" class="form-control" placeholder="Username" name="username">
+			    <input type="password" class="form-control" placeholder="Password" name="password">
+				<button type="submit" class="btn btn-default">Submit</button>
+			</form>
+		</div>
+	</p>
+</body>
+{% endblock %}
