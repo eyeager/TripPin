@@ -1,0 +1,21 @@
+{% extends "trippin/base.html" %}
+{% block content %}
+<h2>Edit Profile</h2>
+
+<body>
+	<p>
+		Only insert the information you'd like to change:
+		<div class="form-group">
+			<form class="form-horizontal" action="/users/save_profile/" method="POST">
+        		{% csrf_token %}
+			    <input type="text" class="form-control" placeholder="First Name" name="first_name">
+			    <input type="text" class="form-control" placeholder="Last Name" name="last_name">
+			    <input type="text" class="form-control" placeholder="Username" name="username">
+			    <input type="text" class="form-control" placeholder="Email Address" name="email">
+				<input type="submit" class="btn btn-default">
+			</form>
+		</div>
+	</p>
+</body>
+
+{% endblock %}

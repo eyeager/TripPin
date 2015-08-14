@@ -29,14 +29,19 @@
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
 		      <ul class="nav navbar-nav navbar-right">
+		      	{% if user.is_authenticated %}
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account<span class="caret"></span></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="/users/">Profile</a></li>
+		            <li><a href="/users/profile">Profile</a></li>
 		            <li role="separator" class="divider"></li>
 		            <li><a href="/users/logout/">Logout</a></li>
 		          </ul>
 		        </li>
+				{% else %}
+				    <a class="navbar-brand" href="/users/login">Login</a>
+				{% endif %}
+
 		      </ul>
 		    </div><!-- /.navbar-collapse -->
 		  </div><!-- /.container-fluid -->

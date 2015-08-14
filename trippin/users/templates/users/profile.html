@@ -1,0 +1,28 @@
+{% extends "trippin/base.html" %}
+{% block content %}
+<h2>My Profile</h2>
+
+<a href="/users/edit_profile">Edit Profile</a>
+<br>
+<a href="/users/change_password">Change Password</a>
+
+<br><br>
+First Name: {{user.first_name}} 
+<br>
+Last Name: {{user.last_name}}
+<br>
+Username: {{user.username}}
+<br>
+Password: ******
+<br>
+Email: {{user.email}}
+<br>
+Joined: {{user.date_joined}}
+<br>
+Last Login: {{user.last_login}}
+
+
+<h3>Social Media Integrations</h3>
+# after domain setup. change to /users/setup_api
+Setup <a href="https://foursquare.com/oauth2/authenticate?client_id=204PWYPMJ2UTC4MGHTRQTAJUKUGN0VKCGNFOVKOWB3QPUFO1&response_type=code&redirect_uri=http://patchworkaustin.com/">Swarm/Foursquare</a>
+{% endblock %}
