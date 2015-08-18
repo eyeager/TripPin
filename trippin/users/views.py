@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from time import strftime
+from datetime import datetime
 from django.template import RequestContext
+from users.models import Integrations, IntegrationsUsers
+from maps.models import Pins, CheckIns
 import requests
 
 from django.http import HttpResponse
@@ -78,11 +82,54 @@ def save_password(request):
 
 @login_required(login_url='/users/login/')
 def setup_api(request):
+	user = request.user
 	api_code = request.GET.get('code')
+	api_info = Integrations.objects.get(name=request.GET.get('api_type'))
 
-	# Change this URL to be made from URL saved in DB
-	api_setup_url = "https://foursquare.com/oauth2/access_token?client_id=204PWYPMJ2UTC4MGHTRQTAJUKUGN0VKCGNFOVKOWB3QPUFO1&client_secret=DVQGPNPU0SKJMBB5MWBYIOJBOQX00QYBEIU2KIFSRDBWWFQA&grant_type=authorization_code&redirect_uri=http://patchworkaustin.com/&code=" + api_code
+	json_data = requests.get(api_info.setup_url + api_code).json()
+	integration_user = IntegrationsUsers.objects.create(user_id=user, integration_id=api_info, auth_key=json_data["access_token"], is_active=True )
 
-	json_data = requests.get(api_setup_url).json()
+	return redirect('/users/profile/')
 
-	return HttpResponse(json_data["access_token"])
+@login_required(login_url='/users/login/')
+def import_api(request):
+	user = request.user
+	api_info = Integrations.objects.get(name=request.GET.get('api_type'))
+	integration_user = IntegrationsUsers.objects.get(user_id=user)
+
+	json_data = requests.get(api_info.data_url + integration_user.auth_key).json()
+
+	# Ensures a valid json response
+	# This json loop imports for foursquare/swarm
+	if json_data["meta"]["code"] == 200:
+		for each in json_data["response"]["checkins"]["items"]:
+
+		# See if checkin(api_check_in_id) has already been imported
+			if not CheckIns.objects.filter(api_check_in_id=each["id"]):
+				# Check to see if api_venue_id and integration_id combo already exist
+				if not Pins.objects.filter(api_venue_id=each["venue"]["id"],integration_id=api_info):
+
+					city, address, url = "","",""
+					# Ensuring that city, url, and formattedAddress are being used
+					if "city" in each["venue"]["location"]:
+						city = each["venue"]["location"]["city"]
+					if "address" in each["venue"]["location"]:
+						address = each["venue"]["location"]["address"]
+					if "url" in each["venue"]["location"]:
+						url = each["venue"]["location"]["url"]
+
+				# 	Adding a pin
+					pin_info = Pins.objects.create(api_venue_id=each["venue"]["id"],integration_id=api_info, name = each["venue"]["name"], latitude = each["venue"]["location"]["lat"], longitude = each["venue"]["location"]["lng"], address = address, city = city, country = each["venue"]["location"]["country"], url = url)
+
+				# Else getting existing pin
+				else:
+					pin_info = Pins.objects.get(api_venue_id=each["venue"]["id"],integration_id=api_info)
+				
+				# Adding a checkin linking to pin				
+				checkin_date = datetime.fromtimestamp(int(each["createdAt"])).strftime('%Y-%m-%d')
+				check_in = CheckIns.objects.create(user_id=user, pin_id=pin_info, api_check_in_id=each["id"], date=checkin_date)
+
+	else:
+	    return render(request, 'trippin/error.html',{"error_message" : "ERROR: could not import data from %s" % api_info.name})
+
+	return render(request, 'trippin/error.html',{"error_message" : "SUCCESS: imported data from %s" % api_info.name})

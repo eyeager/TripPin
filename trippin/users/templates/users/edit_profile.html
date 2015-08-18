@@ -6,7 +6,7 @@
 	<p>
 		Only insert the information you'd like to change:
 		<div class="form-group">
-			<form class="form-horizontal" action="/users/save_profile/" method="POST">
+			<form class="form-horizontal" action="/users/profile/save" method="POST">
         		{% csrf_token %}
 			    <input type="text" class="form-control" placeholder="First Name" name="first_name">
 			    <input type="text" class="form-control" placeholder="Last Name" name="last_name">

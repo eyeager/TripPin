@@ -1,10 +1,20 @@
 {% extends "trippin/base.html" %}
 {% block content %}
+
+<!-- To remove the "#_=_" from the API redirects -->
+<script type="text/javascript">
+if (window.location.hash == '#_=_') {
+    window.location.hash = ''; // for older browsers, leaves a # behind
+    history.pushState('', document.title, window.location.pathname); // nice and clean
+    e.preventDefault(); // no page reload
+}
+</script>
+
 <h2>My Profile</h2>
 
-<a href="/users/edit_profile">Edit Profile</a>
+<a href="edit">Edit Profile</a>
 <br>
-<a href="/users/change_password">Change Password</a>
+<a href="change_password">Change Password</a>
 
 <br><br>
 First Name: {{user.first_name}} 
@@ -23,6 +33,8 @@ Last Login: {{user.last_login}}
 
 
 <h3>Social Media Integrations</h3>
-# after domain setup. change to /users/setup_api
-Setup <a href="https://foursquare.com/oauth2/authenticate?client_id=204PWYPMJ2UTC4MGHTRQTAJUKUGN0VKCGNFOVKOWB3QPUFO1&response_type=code&redirect_uri=http://patchworkaustin.com/">Swarm/Foursquare</a>
+<!-- after domain setup. change to /users/api/setup -->
+Setup <a href="https://foursquare.com/oauth2/authenticate?client_id=P0RE2XWDTPAZOFBSGLMDKND4UA4WAXM2PSMONKR2K4A3HVGA&response_type=code&redirect_uri=http://www.thetrippin.com/users/api/setup?api_type=foursquare">Swarm/Foursquare</a>
+<br>
+<a href='api/import?api_type=foursquare'>Import Swarm/Foursquare</a>
 {% endblock %}
