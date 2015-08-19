@@ -3,6 +3,7 @@ from maps.models import Pins, CheckIns
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from users.models import Integrations, IntegrationsUsers
+
 import collections,json
 
 from django.http import HttpResponse
@@ -20,12 +21,16 @@ def index(request):
 		checkin_data['title'] = checkin.pin.name
 		checkin_data['lat'] = float(checkin.pin.latitude)
 		checkin_data['lng'] = float(checkin.pin.longitude)
-		checkin_data['description'] = checkin.pin.address + checkin.pin.city + checkin.pin.country + checkin.pin.url
+		checkin_data['address'] = checkin.pin.address
+		checkin_data['city'] = checkin.pin.city
+		checkin_data['state'] = checkin.pin.state
+		checkin_data['country'] = checkin.pin.country
+		checkin_data['business_url'] = checkin.pin.url
+		checkin_data['date'] = str(checkin.date)
+		checkin_data['integration_url'] = checkin.pin.integration.venue_url + checkin.pin.api_venue_id + "?ref=" + checkin.pin.integration.client_key
 
 		all_data.append(checkin_data)
 
 	json_data = json.dumps(all_data)
 	
-	# return HttpResponse(json_data)
 	return render(request,'maps/map_google.html',{"pin_data" : json_data})
-	# return render(request,'maps/google_test.html',{"pin_data" : json_data})

@@ -9,9 +9,10 @@ class Integrations(models.Model):
 	client_secret = models.CharField(max_length = 128)
 	setup_url = models.CharField(max_length=384)
 	data_url = models.CharField(max_length=384)
+	venue_url = models.CharField(max_length=128)
 
 class IntegrationsUsers(models.Model):
-	user_id = models.ForeignKey(User)
-	integration_id = models.ForeignKey(Integrations)
+	user = models.ForeignKey(User)
+	integration = models.ForeignKey(Integrations)
 	auth_key = models.CharField(max_length = 128)
 	is_active = models.BooleanField()

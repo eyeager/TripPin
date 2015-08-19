@@ -113,13 +113,15 @@ def import_api(request):
 					# Ensuring that city, url, and formattedAddress are being used
 					if "city" in each["venue"]["location"]:
 						city = each["venue"]["location"]["city"]
+					if "state" in each["venue"]["location"]:
+						state = each["venue"]["location"]["state"]
 					if "address" in each["venue"]["location"]:
 						address = each["venue"]["location"]["address"]
 					if "url" in each["venue"]["location"]:
 						url = each["venue"]["location"]["url"]
 
 				# 	Adding a pin
-					pin_info = Pins.objects.create(api_venue_id=each["venue"]["id"],integration_id=api_info, name = each["venue"]["name"], latitude = each["venue"]["location"]["lat"], longitude = each["venue"]["location"]["lng"], address = address, city = city, country = each["venue"]["location"]["country"], url = url)
+					pin_info = Pins.objects.create(api_venue_id=each["venue"]["id"],integration=api_info, name = each["venue"]["name"], latitude = each["venue"]["location"]["lat"], longitude = each["venue"]["location"]["lng"], address = address, city = city, state = state, country = each["venue"]["location"]["country"], url = url)
 
 				# Else getting existing pin
 				else:
@@ -127,7 +129,7 @@ def import_api(request):
 				
 				# Adding a checkin linking to pin				
 				checkin_date = datetime.fromtimestamp(int(each["createdAt"])).strftime('%Y-%m-%d')
-				check_in = CheckIns.objects.create(user_id=user, pin_id=pin_info, api_check_in_id=each["id"], date=checkin_date)
+				check_in = CheckIns.objects.create(user=user, pin=pin_info, api_check_in_id=each["id"], date=checkin_date)
 
 	else:
 	    return render(request, 'trippin/error.html',{"error_message" : "ERROR: could not import data from %s" % api_info.name})

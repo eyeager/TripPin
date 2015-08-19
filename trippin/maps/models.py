@@ -12,6 +12,7 @@ class Pins(models.Model):
 	latitude = models.DecimalField(max_digits=20, decimal_places=14)
 	address = models.CharField(max_length=150)
 	city = models.CharField(max_length=30)
+	state = models.CharField(max_length=50)
 	country = models.CharField(max_length=50)
 	url = models.CharField(max_length=100)
 

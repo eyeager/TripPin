@@ -62,44 +62,70 @@
 			map.setMapTypeId('map_style');
 
 			setMarkers(map);
-
-			// map.addListener('center_changed', function() {
-		 //    // 3 seconds after the center of the map has changed, pan back to the
-		 //    // marker.
-		 //    window.setTimeout(function() {
-			// 	map.panTo(marker.getPosition());
-			// 	}, 3000);
-			// });
-
-
 		}
 
 		function setMarkers(map) {
 			var pin_data = {{pin_data|safe}}
+
+			// Marker sizes are expressed as a Size of X,Y where the origin of the image
+			// (0,0) is located in the top left of the image.
+
+			// Origins, anchor positions and coordinates of the marker increase in the X
+			// direction to the right and in the Y direction down.
+			var image = {
+				url: '{% static 'trippin/pin_small.png' %}',
+				// // The origin for this image is (0, 0).
+				origin: new google.maps.Point(0, 0),
+				// // The anchor for this image is the base of the flagpole at (0, 32).
+				anchor: new google.maps.Point(0, 23)
+			};
+			// Shapes define the clickable region of the icon. The type defines an HTML
+			// <area> element 'poly' which traces out a polygon as a series of X,Y points.
+			// The final coordinate closes the poly by connecting to the first coordinate.
+			var shape = {
+				coords: [1, 1, 1, 20, 18, 20, 18, 1],
+				type: 'poly'
+			};
+
 			for (var checkin in pin_data) 
 			{
 				var marker = new google.maps.Marker({
 					position: {lat: parseFloat(pin_data[checkin]["lat"]), lng: parseFloat(pin_data[checkin]['lng'])},
 					map: map,
 					title: pin_data[checkin]["title"],
+					icon: image,
+					shape: shape,
 				});
 
-				var contentString = pin_data[checkin]["description"]
+				var contentString = "<h6>" + pin_data[checkin]['title'] + "</h6>" +
+				"<body>" + pin_data[checkin]['address'] + "<br>" +
+				pin_data[checkin]['city'] + " " +
+				pin_data[checkin]['state'] + " " +
+				pin_data[checkin]['country'] + "<br>" +
+				"Dates visited: " + pin_data[checkin]['date'] + "<br>" +
+				// need to fix this if doesn't exist
+				"<a target=\"_blank\" href=" + pin_data[checkin]['business_url'] + "></a>" + "<br>" +
+				"<a target=\"_blank\" href=" + pin_data[checkin]['integration_url'] + ">More Info</a>"
 
-				var infowindow = new google.maps.InfoWindow({
-					content: contentString
-				});
+				var infowindow = new google.maps.InfoWindow();
+
+				bindInfoWindow(marker, map, infowindow, contentString)
 
 				marker.addListener('click', function() {
-					infowindow.open(map, marker);
-				});
-
-				marker.addListener('click', function() {
-					map.setZoom(13);
-					map.setCenter(marker.getPosition());
+					map.setZoom(map.getZoom()+8);
+					map.setCenter(this.getPosition());
 				},false);
-
 			}
+		}
+
+		function bindInfoWindow(marker, map, infowindow, description) {
+
+			marker.addListener('click', function() {
+				infowindow.setContent(description)
+				infowindow.open(map, marker);
+				// Only keeps info window open for 5 seconds
+				setTimeout(function () { infowindow.close(); }, 5000);
+			});
 
 		}
     </script>
