@@ -1,0 +1,12 @@
+body {
+	background-color: #D9F9FF;
+}
+
+#logo {
+	height: 50px;
+}
+
+.navbar {
+	opacity: 0.8;
+	z-index: 1000;
+}
